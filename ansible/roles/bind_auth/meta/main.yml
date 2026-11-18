@@ -1,0 +1,21 @@
+---
+galaxy_info:
+  role_name: bind_auth
+  namespace: pderuiter
+  author: Patrick de Ruiter
+  description: Authoritative-only BIND 9 with a master (type primary) and slave (type secondary) zone setup
+  license: MIT
+  min_ansible_version: "2.15"
+  platforms:
+    - name: Ubuntu
+      versions:
+        - noble
+    - name: EL
+      versions:
+        - "9"
+  galaxy_tags:
+    - dns
+    - bind
+
+dependencies:
+  - role: bind

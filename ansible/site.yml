@@ -1,0 +1,6 @@
+---
+- name: Authoritative-only BIND, master and slave
+  hosts: dns_primary:dns_secondary
+  gather_facts: true
+  roles:
+    - role: bind_auth

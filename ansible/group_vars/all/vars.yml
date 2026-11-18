@@ -1,0 +1,8 @@
+---
+# Addresses from the post. Override them to match your network.
+bind_auth_primary_address: 10.0.0.1
+bind_auth_secondary_addresses:
+  - 10.0.0.2
+
+bind_auth_rrl_responses_per_second: 15
+bind_auth_rrl_window: 5

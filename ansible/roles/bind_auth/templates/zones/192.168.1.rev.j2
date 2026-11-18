@@ -1,0 +1,23 @@
+; {{ ansible_managed }}
+$TTL 86400
+$ORIGIN 1.168.192.in-addr.arpa.
+
+@   IN  SOA ns1.example.com. admin.example.com. (
+            {{ item.serial }}  ; Serial
+            3600        ; Refresh
+            1800        ; Retry
+            604800      ; Expire
+            86400       ; Minimum TTL
+)
+
+; Nameservers
+@       IN  NS      ns1.example.com.
+@       IN  NS      ns2.example.com.
+
+; PTR records
+1       IN  PTR     ns1.example.com.
+2       IN  PTR     ns2.example.com.
+10      IN  PTR     mail.example.com.
+11      IN  PTR     mail2.example.com.
+20      IN  PTR     ftp.example.com.
+100     IN  PTR     server1.example.com.

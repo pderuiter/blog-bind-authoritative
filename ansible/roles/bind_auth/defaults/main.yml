@@ -1,0 +1,31 @@
+---
+# "primary" or "secondary" (set per host, the playbook does it per group)
+bind_auth_server_role: primary
+
+# Addresses of the servers, used for allow-transfer / also-notify / primaries
+bind_auth_primary_address: 10.0.0.1
+bind_auth_secondary_addresses:
+  - 10.0.0.2
+
+# Rate limiting from the post
+bind_auth_rrl_responses_per_second: 15
+bind_auth_rrl_window: 5
+
+# Zones served by the primary. template is a file under templates/zones/.
+bind_auth_zones:
+  - name: example.com
+    file: example.com.zone
+    template: zones/example.com.zone.j2
+    serial: 2024121201
+  - name: 1.168.192.in-addr.arpa
+    file: 192.168.1.rev
+    template: zones/192.168.1.rev.j2
+    serial: 2024121201
+
+# Zones the secondary pulls from the primary (the post shows example.com)
+bind_auth_secondary_zones:
+  - example.com
+
+# Section 11 of the post: file logging to /var/log/named
+bind_auth_logging: true
+bind_auth_log_dir: /var/log/named

@@ -1,0 +1,57 @@
+---
+- name: Load distribution-specific settings
+  ansible.builtin.include_vars: "{{ ansible_facts['os_family'] }}.yml"
+
+- name: Create the zones directory
+  ansible.builtin.file:
+    path: "{{ bind_auth_zone_dir }}"
+    state: directory
+    owner: "{{ bind_user }}"
+    group: "{{ bind_group }}"
+    mode: "0775"
+
+- name: Create the log directory
+  ansible.builtin.file:
+    path: "{{ bind_auth_log_dir }}"
+    state: directory
+    owner: "{{ bind_user }}"
+    group: "{{ bind_group }}"
+    mode: "0755"
+  when: bind_auth_logging
+
+- name: Write zone files (primary)
+  ansible.builtin.template:
+    src: "{{ item.template }}"
+    dest: "{{ bind_auth_zone_dir }}/{{ item.file }}"
+    owner: "{{ bind_user }}"
+    group: "{{ bind_group }}"
+    mode: "0644"
+    validate: named-checkzone {{ item.name }} %s
+  loop: "{{ bind_auth_zones }}"
+  loop_control:
+    label: "{{ item.name }}"
+  when: bind_auth_server_role == 'primary'
+  notify: Bind config changed
+
+- name: Write the authoritative-only options
+  ansible.builtin.template:
+    src: named.conf.options.j2
+    dest: "{{ bind_options_conf }}"
+    owner: root
+    group: "{{ bind_group }}"
+    mode: "0640"
+  notify: Bind config changed
+
+- name: Write the zone definitions and logging
+  ansible.builtin.template:
+    src: named.conf.local.j2
+    dest: "{{ bind_local_conf }}"
+    owner: root
+    group: "{{ bind_group }}"
+    mode: "0640"
+  notify: Bind config changed
+
+- name: Start named with the new configuration
+  ansible.builtin.include_role:
+    name: bind
+    tasks_from: start

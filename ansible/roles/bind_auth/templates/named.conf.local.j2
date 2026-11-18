@@ -1,0 +1,44 @@
+// {{ ansible_managed }}
+{% if bind_auth_server_role == 'primary' %}
+{% for zone in bind_auth_zones %}
+zone "{{ zone.name }}" {
+    type primary;
+    file "{{ bind_auth_zone_dir }}/{{ zone.file }}";
+    allow-transfer { {% for a in bind_auth_secondary_addresses %}{{ a }}; {% endfor %}};  // Secondary server IP
+    also-notify { {% for a in bind_auth_secondary_addresses %}{{ a }}; {% endfor %}};     // Notify secondary on changes
+};
+
+{% endfor %}
+{% else %}
+{% for name in bind_auth_secondary_zones %}
+{% set zone = bind_auth_zones | selectattr('name', 'equalto', name) | first %}
+zone "{{ zone.name }}" {
+    type secondary;
+    file "{{ bind_auth_zone_dir }}/{{ zone.file }}";
+    primaries { {{ bind_auth_primary_address }}; };  // Primary server IP
+};
+
+{% endfor %}
+{% endif %}
+{% if bind_auth_logging %}
+logging {
+    channel default_log {
+        file "{{ bind_auth_log_dir }}/default.log" versions 3 size 5m;
+        severity info;
+        print-time yes;
+        print-severity yes;
+        print-category yes;
+    };
+
+    channel xfer_log {
+        file "{{ bind_auth_log_dir }}/xfer.log" versions 3 size 5m;
+        severity info;
+        print-time yes;
+    };
+
+    category default { default_log; };
+    category xfer-in { xfer_log; };
+    category xfer-out { xfer_log; };
+    category notify { xfer_log; };
+};
+{% endif %}

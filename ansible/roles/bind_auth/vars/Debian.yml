@@ -1,0 +1,2 @@
+---
+bind_auth_zone_dir: /var/lib/bind/zones

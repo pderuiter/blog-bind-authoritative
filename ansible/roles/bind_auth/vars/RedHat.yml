@@ -1,0 +1,3 @@
+---
+# /var/lib/bind does not exist on RHEL; /var/named carries the right SELinux type
+bind_auth_zone_dir: /var/named/zones
