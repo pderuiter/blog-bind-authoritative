@@ -17,9 +17,9 @@ bind_auth_zones:
     file: example.com.zone
     template: zones/example.com.zone.j2
     serial: 2024121201
-  - name: 1.168.192.in-addr.arpa
-    file: 192.168.1.rev
-    template: zones/192.168.1.rev.j2
+  - name: 0.0.10.in-addr.arpa
+    file: 10.0.0.rev
+    template: zones/10.0.0.rev.j2
     serial: 2024121201
 
 # Zones the secondary pulls from the primary (the post shows example.com)

@@ -4,7 +4,7 @@ Companion code for the blog post
 [How to Setup BIND as an Authoritative DNS Server](https://blog.bsdserver.nl/how-to-setup-bind-as-an-authoritative-dns-server/).
 
 It builds the post's setup: two authoritative-only BIND 9 servers, a master (`ns1`,
-`type primary`) serving `example.com` and `1.168.192.in-addr.arpa`, and a slave (`ns2`,
+`type primary`) serving `example.com` and `0.0.10.in-addr.arpa`, and a slave (`ns2`,
 `type secondary`) that transfers `example.com` from it. Recursion is off, zone transfers are
 limited to the slave, responses are rate limited and the server version is hidden. Logging
 goes to `/var/log/named/` as in section 11 of the post.
@@ -42,6 +42,7 @@ ansible-playbook site.yml
 
 # 3. Test (section 9 of the post)
 dig @10.0.0.1 www.example.com A
+dig @10.0.0.1 -x 10.0.0.10                      # mail.example.com.
 dig @10.0.0.2 www.example.com A                 # answered by the slave
 dig @10.0.0.1 example.com AXFR                  # "Transfer failed." from anywhere but ns2
 ```
@@ -56,7 +57,7 @@ Set in `ansible/group_vars/all/vars.yml` (defaults in `roles/bind_auth/defaults/
 |----------|---------|---------|
 | `bind_auth_primary_address` | `10.0.0.1` | Master address, used in the slave's `primaries` and the `ns1` A record |
 | `bind_auth_secondary_addresses` | `["10.0.0.2"]` | Slaves allowed to transfer and notified on change |
-| `bind_auth_zones` | `example.com`, `1.168.192.in-addr.arpa` | Zones on the master (name, file, template, serial) |
+| `bind_auth_zones` | `example.com`, `0.0.10.in-addr.arpa` | Zones on the master (name, file, template, serial) |
 | `bind_auth_secondary_zones` | `["example.com"]` | Zones the slave transfers |
 | `bind_auth_rrl_responses_per_second` / `bind_auth_rrl_window` | `15` / `5` | Response rate limiting |
 | `bind_auth_logging` | `true` | File logging to `bind_auth_log_dir` (`/var/log/named`) |
